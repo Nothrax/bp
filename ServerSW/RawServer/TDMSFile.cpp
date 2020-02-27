@@ -47,21 +47,21 @@ void TDMSFile::writeLeadIn() {
     uint32_t tocMask = TOC_MASK;
     uint32_t versionNumber = TDMS_VERSION;
     //first 4 bytes is TDSm tag
-    fwrite("TDSm", sizeof(uint8_t), 4, file);
+    fwrite("TDSm", sizeof(uint8_t), 4, tdmsFile);
     //4 bytes ToC mask
-    fwrite(&tocMask, sizeof(uint32_t), 1, file);
+    fwrite(&tocMask, sizeof(uint32_t), 1, tdmsFile);
     //4 bytes version number
-    fwrite(&versionNumber, sizeof(uint32_t), 1, file);
+    fwrite(&versionNumber, sizeof(uint32_t), 1, tdmsFile);
     //8 bytes content length without lead in length
-    fwrite(&dataLen, sizeof(uint64_t), 1, file);
+    fwrite(&dataLen, sizeof(uint64_t), 1, tdmsFile);
     //8 bytes raw data offset without lead in length
-    fwrite(&rawDataOffset, sizeof(uint64_t), 1, file);
+    fwrite(&rawDataOffset, sizeof(uint64_t), 1, tdmsFile);
 }
 
 void TDMSFile::writeMetaData() {
     //number of objects - 2 paths + sensors
     uint32_t binValue = 2 + message->getNumberOfChannels();
-    fwrite(&binValue, sizeof(uint32_t), 1, file);
+    fwrite(&binValue, sizeof(uint32_t), 1, tdmsFile);
 
     //first object is "/" path with two properties
     writeObject("/", 0xffffffff, 2);
@@ -88,20 +88,20 @@ void TDMSFile::writeMetaData() {
 void TDMSFile::writeObject(string path, uint32_t rawDataIndex, uint32_t numberOfProperties) {
     //object path length
     uint32_t binValue = path.length();
-    fwrite(&binValue, sizeof(uint32_t), 1, file);
+    fwrite(&binValue, sizeof(uint32_t), 1, tdmsFile);
     //object path name
-    fwrite(path.c_str(), sizeof(uint8_t), path.length(), file);
+    fwrite(path.c_str(), sizeof(uint8_t), path.length(), tdmsFile);
     //raw data index -> ff ff ff ff means no raw data
-    fwrite(&rawDataIndex, sizeof(uint32_t), 1, file);
+    fwrite(&rawDataIndex, sizeof(uint32_t), 1, tdmsFile);
 
     //add raw data info
     if(rawDataIndex != 0xffffffff){
         //add raw value data type -> 0x00000003 is 32bit uint
         binValue = 0x00000003;
-        fwrite(&binValue, sizeof(uint32_t), 1, file);
+        fwrite(&binValue, sizeof(uint32_t), 1, tdmsFile);
         //add data dimensions, should be always 1
         binValue = 1;
-        fwrite(&binValue, sizeof(uint32_t), 1, file);
+        fwrite(&binValue, sizeof(uint32_t), 1, tdmsFile);
         //add raw data length of one channel -> (num of bytes/num of channelMask)/num of bytes in one value
         uint64_t longBinvalue;
         switch(message->getProtocolVersion()){
@@ -115,27 +115,27 @@ void TDMSFile::writeObject(string path, uint32_t rawDataIndex, uint32_t numberOf
                 //todo logovat chybu
                 break;
         }
-        fwrite(&longBinvalue, sizeof(uint64_t), 1, file);
+        fwrite(&longBinvalue, sizeof(uint64_t), 1, tdmsFile);
 
     }
     //number of object properties
-    fwrite(&numberOfProperties, sizeof(uint32_t), 1, file);
+    fwrite(&numberOfProperties, sizeof(uint32_t), 1, tdmsFile);
 }
 
 void TDMSFile::writeProperty(string propertyName, string propertyValue) {
     //first name length
     uint32_t binValue = propertyName.length();
-    fwrite(&binValue, sizeof(uint32_t), 1, file);
+    fwrite(&binValue, sizeof(uint32_t), 1, tdmsFile);
     //property name
-    fwrite(propertyName.c_str(), sizeof(uint8_t), propertyName.length(), file);
+    fwrite(propertyName.c_str(), sizeof(uint8_t), propertyName.length(), tdmsFile);
     //data type of property value -> 0x00000020 is string
     binValue = 0x20;
-    fwrite(&binValue, sizeof(uint32_t), 1, file);
+    fwrite(&binValue, sizeof(uint32_t), 1, tdmsFile);
     //property value len
     binValue = propertyValue.length();
-    fwrite(&binValue, sizeof(uint32_t), 1, file);
+    fwrite(&binValue, sizeof(uint32_t), 1, tdmsFile);
     //property value
-    fwrite(propertyValue.c_str(), sizeof(uint8_t), propertyValue.length(), file);
+    fwrite(propertyValue.c_str(), sizeof(uint8_t), propertyValue.length(), tdmsFile);
 
 }
 
@@ -150,12 +150,12 @@ void TDMSFile::writeRawData() {
                 rawValue += *(message->getRawData()+i+2)<< 16;
                 int signedValue = rawValue > 8388607 ? (rawValue - 2 * 8388607 - 2) : rawValue;
 
-                fwrite(&signedValue, sizeof(int), 1, file);
+                fwrite(&signedValue, sizeof(int), 1, tdmsFile);
             }
             break;
         case 1:
             for(int i = 0; i < message->getRawDataSize()/PROTOCOL_1_VALUE_SIZE;i++){
-                fwrite(&(((int32_t *)message->getRawData())[i]), sizeof(int), 1, file);
+                fwrite(&(((int32_t *)message->getRawData())[i]), sizeof(int), 1, tdmsFile);
             }
             break;
         default:
@@ -167,14 +167,14 @@ void TDMSFile::writeRawData() {
 
 void TDMSFile::openFile() {
     createFilename();
-    file = fopen((filename + ".tdms").c_str(), "wb");
-    if(file == nullptr){
-        throw std::runtime_error("Unable to create file with name: " + filename + ".tdms");
+    tdmsFile = fopen((filename + ".tdms").c_str(), "wb");
+    if(tdmsFile == nullptr){
+        throw std::runtime_error("Unable to create tdmsFile with name: " + filename + ".tdms");
     }
 }
 
 void TDMSFile::closeFile() {
-    fclose(file);
+    fclose(tdmsFile);
 }
 
 void TDMSFile::generateChannelDescription(){

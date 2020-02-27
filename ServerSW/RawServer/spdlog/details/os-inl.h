@@ -167,7 +167,7 @@ SPDLOG_INLINE int rename(const filename_t &filename1, const filename_t &filename
 #endif
 }
 
-// Return if file exists
+// Return if tdmsFile exists
 SPDLOG_INLINE bool file_exists(const filename_t &filename) SPDLOG_NOEXCEPT
 {
 #ifdef _WIN32
@@ -183,12 +183,12 @@ SPDLOG_INLINE bool file_exists(const filename_t &filename) SPDLOG_NOEXCEPT
 #endif
 }
 
-// Return file dataSize according to open FILE* object
+// Return tdmsFile dataSize according to open FILE* object
 SPDLOG_INLINE size_t filesize(FILE *f)
 {
     if (f == nullptr)
     {
-        throw spdlog_ex("Failed getting file dataSize. fd is null");
+        throw spdlog_ex("Failed getting tdmsFile dataSize. fd is null");
     }
 #if defined(_WIN32) && !defined(__CYGWIN__)
     int fd = _fileno(f);
@@ -225,7 +225,7 @@ SPDLOG_INLINE size_t filesize(FILE *f)
     }
 #endif
 #endif
-    throw spdlog_ex("Failed getting file dataSize from fd", errno);
+    throw spdlog_ex("Failed getting tdmsFile dataSize from fd", errno);
 }
 
 // Return utc offset in minutes or throw spdlog_ex on failure
@@ -340,7 +340,7 @@ SPDLOG_INLINE void sleep_for_millis(int milliseconds) SPDLOG_NOEXCEPT
 #endif
 }
 
-// wchar support for windows file names (SPDLOG_WCHAR_FILENAMES must be defined)
+// wchar support for windows tdmsFile names (SPDLOG_WCHAR_FILENAMES must be defined)
 #if defined(_WIN32) && defined(SPDLOG_WCHAR_FILENAMES)
 SPDLOG_INLINE std::string filename_to_str(const filename_t &filename) SPDLOG_NOEXCEPT
 {
@@ -392,7 +392,7 @@ SPDLOG_INLINE bool in_terminal(FILE *file) SPDLOG_NOEXCEPT
 {
 
 #ifdef _WIN32
-    return _isatty(_fileno(file)) != 0;
+    return _isatty(_fileno(tdmsFile)) != 0;
 #else
     return isatty(fileno(file)) != 0;
 #endif

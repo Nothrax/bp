@@ -40,7 +40,7 @@ private:
     uint64_t rawDataOffset;
     string filename;
     Message *message;
-    FILE* file;
+    FILE* tdmsFile;
     ChannelUnit channels[NUMBER_OF_CHANNELS];
 
     void openFile();

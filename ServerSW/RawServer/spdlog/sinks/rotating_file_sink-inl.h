@@ -38,7 +38,7 @@ SPDLOG_INLINE rotating_file_sink<Mutex>::rotating_file_sink(
     }
 }
 
-// calc filename according to index and file extension if exists.
+// calc filename according to index and tdmsFile extension if exists.
 // e.g. calc_filename("logs/mylog.txt, 3) => "logs/mylog.3.txt".
 template<typename Mutex>
 SPDLOG_INLINE filename_t rotating_file_sink<Mutex>::calc_filename(const filename_t &filename, std::size_t index)
@@ -110,7 +110,7 @@ SPDLOG_INLINE void rotating_file_sink<Mutex>::rotate_()
             details::os::sleep_for_millis(100);
             if (!rename_file(src, target))
             {
-                file_helper_.reopen(true); // truncate the log file anyway to prevent it to grow beyond its limit!
+                file_helper_.reopen(true); // truncate the log tdmsFile anyway to prevent it to grow beyond its limit!
                 current_size_ = 0;
                 throw spdlog_ex("rotating_file_sink: failed renaming " + filename_to_str(src) + " to " + filename_to_str(target), errno);
             }
@@ -119,12 +119,12 @@ SPDLOG_INLINE void rotating_file_sink<Mutex>::rotate_()
     file_helper_.reopen(true);
 }
 
-// delete the target if exists, and rename the src file  to target
+// delete the target if exists, and rename the src tdmsFile  to target
 // return true on success, false otherwise.
 template<typename Mutex>
 SPDLOG_INLINE bool rotating_file_sink<Mutex>::rename_file(const filename_t &src_filename, const filename_t &target_filename)
 {
-    // try to delete the target file in case it already exists.
+    // try to delete the target tdmsFile in case it already exists.
     (void)details::os::remove(target_filename);
     return details::os::rename(src_filename, target_filename) == 0;
 }

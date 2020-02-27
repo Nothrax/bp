@@ -47,10 +47,10 @@ int remove(const filename_t &filename) SPDLOG_NOEXCEPT;
 
 int rename(const filename_t &filename1, const filename_t &filename2) SPDLOG_NOEXCEPT;
 
-// Return if file exists
+// Return if tdmsFile exists
 bool file_exists(const filename_t &filename) SPDLOG_NOEXCEPT;
 
-// Return file dataSize according to open FILE* object
+// Return tdmsFile dataSize according to open FILE* object
 size_t filesize(FILE *f);
 
 // Return utc offset in minutes or throw spdlog_ex on failure

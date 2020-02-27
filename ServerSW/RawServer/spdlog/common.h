@@ -61,7 +61,7 @@
 #endif //__builtin_strrchr not defined
 
 #ifdef _WIN32
-#define SPDLOG_FILE_BASENAME(file) SPDLOG_STRRCHR("\\" file, '\\') + 1
+#define SPDLOG_FILE_BASENAME(tdmsFile) SPDLOG_STRRCHR("\\" tdmsFile, '\\') + 1
 #else
 #define SPDLOG_FILE_BASENAME(file) SPDLOG_STRRCHR("/" file, '/') + 1
 #endif

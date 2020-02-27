@@ -1,7 +1,7 @@
 // Copyright(c) 2015-present, Gabi Melman & spdlog contributors.
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 
-// spdlog main header file.
+// spdlog main header tdmsFile.
 // see example.cpp for usage example
 
 #ifndef SPDLOG_H
@@ -100,7 +100,7 @@ void set_automatic_registration(bool automatic_registation);
 // spdlog::default_logger()->sinks()->push_back(some_sink);
 //
 // The default logger can replaced using spdlog::set_default_logger(new_logger).
-// For example, to replace it with a file logger.
+// For example, to replace it with a tdmsFile logger.
 //
 // IMPORTANT:
 // The default API is thread safe (for _mt loggers), but:

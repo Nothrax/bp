@@ -15,19 +15,17 @@ void AggregationServer::startAggregationServer() {
 void AggregationServer::waitForMessage(){
     try{
         Message *message = udpServer->receiveMessage();
-/*        myThreads[threadIndex] = std::thread(InfluxDatabase::transferDataToInflux, message, config.database);
+        threads[threadIndex] = std::thread(InfluxDatabase::transferDataToInflux, message, config.database);
         threadIndex++;
         if(threadIndex == NUM_OF_THREADS){
-            for (auto & myThread : myThreads){
+            for (auto & myThread : threads){
                 myThread.join();
             }
             threadIndex = 0;
-        }*/
-        InfluxDatabase::transferDataToInflux(message, config.database);
+        }
     }catch(std::exception &e){
         logger->error("Exception raised in message receive or thread {}", e.what());
     }
-
 }
 
 AggregationServer::AggregationServer(Config config, UDPServer *udpServer) {

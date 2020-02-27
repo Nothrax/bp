@@ -30,7 +30,7 @@ private:
     Config config;
     std::shared_ptr<spdlog::logger> logger;
     void waitForMessage();
-    std::thread myThreads[NUM_OF_THREADS];
+    std::thread threads[NUM_OF_THREADS];
     int threadIndex = 0;
 };
 

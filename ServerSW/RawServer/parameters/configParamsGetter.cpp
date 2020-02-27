@@ -37,12 +37,12 @@ void createLogger(bool verbose) {
         sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
     }
 
-    //rotating file sink for error and warn
+    //rotating tdmsFile sink for error and warn
     auto console_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("logs/Error_log.txt", 1024*1024*5, 5, false);
     console_sink->set_level(spdlog::level::err);
     sinks.push_back(console_sink);
 
-    //rotating file sink for info
+    //rotating tdmsFile sink for info
     sinks.push_back(std::make_shared<spdlog::sinks::rotating_file_sink_mt>("logs/Info_log.txt", 1024*1024*5, 5, false));
 
     auto mdbrkLogger = std::make_shared<spdlog::logger>("Raw_server", begin(sinks), end(sinks));

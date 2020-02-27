@@ -2193,7 +2193,7 @@ class arg_formatter:
 
 /**
  An error returned by an operating system or a language runtime,
- for example a file opening error.
+ for example a tdmsFile opening error.
 */
 class system_error : public std::runtime_error {
  private:
@@ -2215,12 +2215,12 @@ class system_error : public std::runtime_error {
    **Example**::
 
      // This throws a system_error with the description
-     //   cannot open file 'madeup': No such file or directory
+     //   cannot open tdmsFile 'madeup': No such tdmsFile or directory
      // or similar (system message may vary).
      const char *filename = "madeup";
-     std::FILE *file = std::fopen(filename, "r");
-     if (!file)
-       throw fmt::system_error(errno, "cannot open file '{}'", filename);
+     std::FILE *tdmsFile = std::fopen(filename, "r");
+     if (!tdmsFile)
+       throw fmt::system_error(errno, "cannot open tdmsFile '{}'", filename);
    \endrst
   */
   template <typename... Args>
@@ -2235,7 +2235,7 @@ class system_error : public std::runtime_error {
 /**
   \rst
   Formats an error returned by an operating system or a language runtime,
-  for example a file opening error, and writes it to *out* in the following
+  for example a tdmsFile opening error, and writes it to *out* in the following
   form:
 
   .. parsed-literal::
@@ -2785,14 +2785,14 @@ class windows_error : public system_error {
    **Example**::
 
      // This throws a windows_error with the description
-     //   cannot open file 'madeup': The system cannot find the file specified.
+     //   cannot open tdmsFile 'madeup': The system cannot find the tdmsFile specified.
      // or similar (system message may vary).
      const char *filename = "madeup";
      LPOFSTRUCT of = LPOFSTRUCT();
-     HFILE file = OpenFile(filename, &of, OF_READ);
-     if (file == HFILE_ERROR) {
+     HFILE tdmsFile = OpenFile(filename, &of, OF_READ);
+     if (tdmsFile == HFILE_ERROR) {
        throw fmt::windows_error(GetLastError(),
-                                "cannot open file '{}'", filename);
+                                "cannot open tdmsFile '{}'", filename);
      }
    \endrst
   */

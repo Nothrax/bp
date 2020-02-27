@@ -9,8 +9,8 @@
 namespace spdlog {
 namespace details {
 
-// Helper class for file sinks.
-// When failing to open a file, retry several times(5) with a delay interval(10 ms).
+// Helper class for tdmsFile sinks.
+// When failing to open a tdmsFile, retry several times(5) with a delay interval(10 ms).
 // Throw spdlog_ex exception on errors.
 
 class file_helper
@@ -32,7 +32,7 @@ public:
     static bool file_exists(const filename_t &fname);
 
     //
-    // return file path and its extension:
+    // return tdmsFile path and its extension:
     //
     // "mylog.txt" => ("mylog", ".txt")
     // "mylog" => ("mylog", "")

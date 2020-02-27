@@ -15,7 +15,7 @@ namespace spdlog {
 namespace sinks {
 
 //
-// Rotating file sink based on dataSize
+// Rotating tdmsFile sink based on dataSize
 //
 template<typename Mutex>
 class rotating_file_sink final : public base_sink<Mutex>
@@ -37,7 +37,7 @@ private:
     // log.3.txt -> delete
     void rotate_();
 
-    // delete the target if exists, and rename the src file  to target
+    // delete the target if exists, and rename the src tdmsFile  to target
     // return true on success, false otherwise.
     bool rename_file(const filename_t &src_filename, const filename_t &target_filename);
 

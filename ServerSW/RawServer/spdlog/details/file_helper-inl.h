@@ -39,14 +39,14 @@ SPDLOG_INLINE void file_helper::open(const filename_t &fname, bool truncate)
         details::os::sleep_for_millis(open_interval);
     }
 
-    throw spdlog_ex("Failed opening file " + os::filename_to_str(_filename) + " for writing", errno);
+    throw spdlog_ex("Failed opening tdmsFile " + os::filename_to_str(_filename) + " for writing", errno);
 }
 
 SPDLOG_INLINE void file_helper::reopen(bool truncate)
 {
     if (_filename.empty())
     {
-        throw spdlog_ex("Failed re opening file - was not opened before");
+        throw spdlog_ex("Failed re opening tdmsFile - was not opened before");
     }
     open(_filename, truncate);
 }
@@ -71,7 +71,7 @@ SPDLOG_INLINE void file_helper::write(const fmt::memory_buffer &buf)
     auto data = buf.data();
     if (std::fwrite(data, 1, msg_size, fd_) != msg_size)
     {
-        throw spdlog_ex("Failed writing to file " + os::filename_to_str(_filename), errno);
+        throw spdlog_ex("Failed writing to tdmsFile " + os::filename_to_str(_filename), errno);
     }
 }
 
@@ -79,7 +79,7 @@ SPDLOG_INLINE size_t file_helper::size() const
 {
     if (fd_ == nullptr)
     {
-        throw spdlog_ex("Cannot use dataSize() on closed file " + os::filename_to_str(_filename));
+        throw spdlog_ex("Cannot use dataSize() on closed tdmsFile " + os::filename_to_str(_filename));
     }
     return os::filesize(fd_);
 }
@@ -95,7 +95,7 @@ SPDLOG_INLINE bool file_helper::file_exists(const filename_t &fname)
 }
 
 //
-// return file path and its extension:
+// return tdmsFile path and its extension:
 //
 // "mylog.txt" => ("mylog", ".txt")
 // "mylog" => ("mylog", "")

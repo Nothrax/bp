@@ -1463,7 +1463,7 @@ FMT_API void vprint(std::FILE *f, wstring_view format_str, wformat_args args);
 
 /**
   \rst
-  Prints formatted data to the file *f*. For wide format strings,
+  Prints formatted data to the tdmsFile *f*. For wide format strings,
   *f* should be in wide-oriented mode set via ``fwide(f, 1)`` or
   ``_setmode(_fileno(f), _O_U8TEXT)`` on Windows.
 
