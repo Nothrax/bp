@@ -30,8 +30,6 @@ Config Configuration::loadConfig(std::string configFilePath) {
 
         //READING section
         config.frequency = reader.GetInteger("reading", "reading_speed",-1);
-        config.backup = reader.GetBoolean("reading", "usb_backup", false);
-        config.backupPath = reader.Get("reading", "backup_path", "UNKNOWN");
         config.dataReadyPin = reader.GetInteger("reading", "data_ready_pin", -1);
         config.spiSpeed = reader.GetInteger("reading", "spi_speed", -1);
         config.restartAdcPin = reader.GetInteger("reading", "restart_adc_pin", -1);
@@ -86,7 +84,6 @@ Config Configuration::loadConfig(std::string configFilePath) {
            config.tcpPort == -1 ||
            config.tcpIp == "UNKNOWN" ||
            config.frequency == -1 ||
-           config.backupPath == "UNKNOWN" ||
            config.dataReadyPin == -1 ||
            config.spiSpeed == -1 ||
            config.restartAdcPin == -1 ||

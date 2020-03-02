@@ -1,0 +1,6 @@
+# comment
+db_user             admin
+db_password         db_mysql
+db_address          89.103.230.142
+db_database         bp_mariadb
+

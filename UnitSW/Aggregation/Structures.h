@@ -18,12 +18,10 @@ struct Config{
     int32_t dataReadyPin;
     bool raw;
     bool sdf;
-    bool backup;
     bool verbose;
     int32_t rawFrequency;
     int32_t bufferLengthInSeconds;
     std::string logPath;
-    std::string backupPath;
     std::string dataFilePath;
     std::string udpIp;
     std::string tcpIp;
