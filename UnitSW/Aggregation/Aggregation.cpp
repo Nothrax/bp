@@ -16,7 +16,7 @@ void Aggregation::start() {
         receiveSecond = time(nullptr) - TIME_OFFEST;
         struct timeval tp;
         gettimeofday(&tp, nullptr);
-        offset = tp.tv_usec;
+        offset = tp.tv_usec*1000000;
         std::cout << "I read a buffer!\n";
         calculateRMS();
         deltaTreshold();
