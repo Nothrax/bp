@@ -6,7 +6,7 @@ databases=$(echo "$databases" | grep -Eio '^([0-9]|[a-f]){8}$')
 for tmp in $databases
 do
         echo "Giving privileges for: $tmp, to: Chronograf = READ"
-	influx -username admin -password bp_influx -execute "GRANT WRITE ON "$tmp" TO Chronograf;"
+	influx -username admin -password bp_influx -execute "GRANT READ ON "$tmp" TO Chronograf;"
 	let "number_database+=1"
 done
 
