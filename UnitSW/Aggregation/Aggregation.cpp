@@ -14,6 +14,9 @@ void Aggregation::start() {
         pointsToSend.clear();
         SHMhandler->readBuffer((uint8_t *)buffer, 128000*config.bufferLengthInSeconds);
         receiveSecond = time(nullptr) - TIME_OFFEST;
+        struct timeval tp;
+        gettimeofday(&tp, nullptr);
+        offset = tp.tv_usec;
         std::cout << "I read a buffer!\n";
         calculateRMS();
         deltaTreshold();
@@ -90,30 +93,35 @@ void Aggregation::calculateRMS() {
 }
 
 void Aggregation::deltaTreshold() {
-
+    DataPoint dataPoint;
+    dataPoint.time = receiveSecond;
     for(int dataIndex = 0; dataIndex < valuesPerChannel/config.average; dataIndex++){
+        offset += pointNanosecondOffset;
+        if(offset >= 1000000000){
+            dataPoint.time += 1;
+            offset -= 1000000000;
+        }
+        dataPoint.timeOffset = offset;
+
         for(int sensorIndex = 0; sensorIndex < NUMBER_OF_SENSORS; sensorIndex++){
-        	if(config.sensorActive[sensorIndex]){
-	            if(fabsf(rms[sensorIndex][dataIndex] - lastSavedValue[sensorIndex]) > config.delta || pointsThrown[sensorIndex] > config.period || dataIndex == 0){
-	                DataPoint dataPoint;
-	                dataPoint.value = rms[sensorIndex][dataIndex];
-	                dataPoint.time = receiveSecond;
-	                dataPoint.sensorNumber = sensorIndex;
-
-	                ulong offset = dataIndex*pointNanosecondOffset;
-	                dataPoint.time += offset / 1000000000;
-	                dataPoint.timeOffset = offset % 1000000000;
-
-	                //pointsToSend[sensorIndex].push_back(dataPoint);
-	                pointsToSend.push_back(dataPoint);
+            if(config.sensorActive[sensorIndex]){
+                if(fabsf(rms[sensorIndex][dataIndex] - lastSavedValue[sensorIndex]) > config.delta || pointsThrown[sensorIndex] > config.period){
+                    dataPoint.value = rms[sensorIndex][dataIndex];
+                    dataPoint.sensorNumber = sensorIndex;
 
 
-	                pointsThrown[sensorIndex] = 0;
-	                lastSavedValue[sensorIndex] = dataPoint.value;
-	            }else{
-	                pointsThrown[sensorIndex]++;
-	            }
-	        }
+
+                    //pointsToSend[sensorIndex].push_back(dataPoint);
+                    pointsToSend.push_back(dataPoint);
+
+                    pointsThrown[sensorIndex] = 0;
+                    lastSavedValue[sensorIndex] = dataPoint.value;
+
+                    std::cout << dataPoint.value << " time: "<< dataPoint.time << std::endl;
+                }else{
+                    pointsThrown[sensorIndex]++;
+                }
+            }
         }
     }
 }
