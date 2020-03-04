@@ -32,6 +32,7 @@ private:
     uint32_t lastSavedValue[NUMBER_OF_SENSORS] = {0};
     uint32_t pointsThrown[NUMBER_OF_SENSORS] = {0};
     uint32_t pointNanosecondOffset = 0;
+    unsigned long long int offset = 0;
 
     void calculateRMS();
     void deltaTreshold();
