@@ -11,7 +11,7 @@ void Aggregation::start() {
     udpClient->init();
     SHMhandler->openSharedMemory();
     while(true){
-
+        pointsToSend.clear();
         SHMhandler->readBuffer((uint8_t *)buffer, 128000*config.bufferLengthInSeconds);
         receiveSecond = time(nullptr) - TIME_OFFEST;
         std::cout << "I read a buffer!\n";
@@ -93,25 +93,27 @@ void Aggregation::deltaTreshold() {
 
     for(int dataIndex = 0; dataIndex < valuesPerChannel/config.average; dataIndex++){
         for(int sensorIndex = 0; sensorIndex < NUMBER_OF_SENSORS; sensorIndex++){
-            if(fabsf(rms[sensorIndex][dataIndex] - lastSavedValue[sensorIndex]) > config.delta || pointsThrown[sensorIndex] > config.period){
-                DataPoint dataPoint;
-                dataPoint.value = rms[sensorIndex][dataIndex];
-                dataPoint.time = receiveSecond;
-                dataPoint.sensorNumber = sensorIndex;
+        	if(config.sensorActive[sensorIndex]){
+	            if(fabsf(rms[sensorIndex][dataIndex] - lastSavedValue[sensorIndex]) > config.delta || pointsThrown[sensorIndex] > config.period || dataIndex == 0){
+	                DataPoint dataPoint;
+	                dataPoint.value = rms[sensorIndex][dataIndex];
+	                dataPoint.time = receiveSecond;
+	                dataPoint.sensorNumber = sensorIndex;
 
-                ulong offset = dataIndex*pointNanosecondOffset;
-                dataPoint.time += offset / 1000000000;
-                dataPoint.timeOffset = offset % 1000000000;
+	                ulong offset = dataIndex*pointNanosecondOffset;
+	                dataPoint.time += offset / 1000000000;
+	                dataPoint.timeOffset = offset % 1000000000;
 
-                //pointsToSend[sensorIndex].push_back(dataPoint);
-                pointsToSend.push_back(dataPoint);
+	                //pointsToSend[sensorIndex].push_back(dataPoint);
+	                pointsToSend.push_back(dataPoint);
 
 
-                pointsThrown[sensorIndex] = 0;
-                lastSavedValue[sensorIndex] = dataPoint.value;
-            }else{
-                pointsThrown[sensorIndex]++;
-            }
+	                pointsThrown[sensorIndex] = 0;
+	                lastSavedValue[sensorIndex] = dataPoint.value;
+	            }else{
+	                pointsThrown[sensorIndex]++;
+	            }
+	        }
         }
     }
 }

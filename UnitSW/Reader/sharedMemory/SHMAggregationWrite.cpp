@@ -9,7 +9,12 @@ SHMAggregationWrite::SHMAggregationWrite(Config config){
 }
 
 SHMAggregationWrite::~SHMAggregationWrite() {
-
+    using namespace boost::interprocess;
+    std::cout << "closing shared memory2\n";
+    shared_memory_object::remove("aggregationBuffer1");
+    shared_memory_object::remove("aggregationBuffer2");
+    named_semaphore::remove("aggregationSemaphore1");
+    named_semaphore::remove("aggregationSemaphore2");
 }
 
 void SHMAggregationWrite::openSharedMemory() {

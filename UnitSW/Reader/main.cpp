@@ -11,36 +11,21 @@
 
 //todo config path brat z argumentu
 
-int main() {
-    //todo cesta k config souboru z parametru
-    printf("pred configem\n");
-    Config config = Configuration::loadConfig("/home/pi/config.ini");
-
-    //vypis configu
-    if(false){
-        printf("uid: %08x\n", config.uid);
-        std::cout << "log path: " << config.logPath << std::endl;
-        printf("console log: %d\n", config.verbose);
-        printf("data source: %d\n", config.dataSource);
-        std::cout << "file path: " << config.dataFilePath << std::endl;
-        printf("frequency: %d\n", config.frequency);
-        printf("usb backup: %d\n", config.backup);
-        std::cout << "backup path: " << config.backupPath << std::endl;
-        printf("data ready: %d\n", config.dataReadyPin);
-
-        printf("spi speed : %d\n", config.spiSpeed);
-        printf("restart adc: %d\n", config.restartAdcPin);
-        printf("raw: %d\n", config.raw);
-        printf("sdf: %d\n", config.sdf);
-        printf("raw freq: %d\n", config.rawFrequency);
-
-        for(int i = 0; i < NUMBER_OF_SENSORS; i++){
-            printf("sensor active: %d\n", config.sensorActive[i]);
-            printf("sensor pin: %d\n", config.outputDisablePin[i]);
-        }
-
-
+int main(int argc, char **argv) {
+    if(argc != 3){
+        std::cerr << "Wrong number of arguments, should be -p [path to config.ini]" << std::endl;
+        exit(EXIT_FAILURE);
     }
+    std::string argument(argv[1]);
+    if(argument != "-p"){
+
+        std::cerr << "Wrong arguments, should be -p [path to config.ini]" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    std::string configPath(argv[2]);
+
+    Config config = Configuration::loadConfig(configPath);
+
 
     printf("pred logem\n");
     Logger::initLogger(config.logPath, config.verbose);
