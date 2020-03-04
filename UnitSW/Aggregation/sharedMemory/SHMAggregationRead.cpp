@@ -9,7 +9,7 @@ void SHMAggregationRead::openSharedMemory() {
     buffer1 = new  managed_shared_memory( open_read_only
             , "aggregationBuffer1");
     buffer2 = new managed_shared_memory ( open_read_only
-            , "aggregationBuffer1");
+            , "aggregationBuffer2");
     semaphore1 = new named_semaphore(open_only, "aggregationSemaphore1");
     semaphore2 = new named_semaphore(open_only, "aggregationSemaphore2");
 
