@@ -111,7 +111,7 @@ void Aggregation::deltaTreshold() {
                     pointsThrown[sensorIndex] = 0;
                     lastSavedValue[sensorIndex] = dataPoint.value;
 
-                    std::cout << dataPoint.value << " time: "<< dataPoint.time << std::endl;
+                    //std::cout << dataPoint.value << " time: "<< dataPoint.time << std::endl;
                 }else{
                     pointsThrown[sensorIndex]++;
                 }
