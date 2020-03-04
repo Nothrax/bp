@@ -16,7 +16,7 @@ void Aggregation::start() {
         receiveSecond = time(nullptr) - TIME_OFFEST;
         struct timeval tp;
         gettimeofday(&tp, nullptr);
-        offset = tp.tv_usec*1000000;
+        offset = tp.tv_usec*1000;
         std::cout << "I read a buffer!\n";
         calculateRMS();
         deltaTreshold();
@@ -95,14 +95,8 @@ void Aggregation::calculateRMS() {
 void Aggregation::deltaTreshold() {
     DataPoint dataPoint;
     dataPoint.time = receiveSecond;
+    dataPoint.timeOffset = offset;
     for(int dataIndex = 0; dataIndex < valuesPerChannel/config.average; dataIndex++){
-        offset += pointNanosecondOffset;
-        if(offset >= 1000000000){
-            dataPoint.time += 1;
-            offset -= 1000000000;
-        }
-        dataPoint.timeOffset = offset;
-
         for(int sensorIndex = 0; sensorIndex < NUMBER_OF_SENSORS; sensorIndex++){
             if(config.sensorActive[sensorIndex]){
                 if(fabsf(rms[sensorIndex][dataIndex] - lastSavedValue[sensorIndex]) > config.delta || pointsThrown[sensorIndex] > config.period){
@@ -123,5 +117,12 @@ void Aggregation::deltaTreshold() {
                 }
             }
         }
+        
+        offset += pointNanosecondOffset;
+        if(offset >= 1000000000){
+            dataPoint.time += 1;
+            offset -= 1000000000;
+        }
+        dataPoint.timeOffset = offset;
     }
 }
