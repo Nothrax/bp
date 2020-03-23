@@ -2,6 +2,7 @@
 // Created by root on 02.03.20.
 //
 
+#include <fstream>
 #include "ConfigGenerator.h"
 
 ConfigGenerator::ConfigGenerator(Arguments arguments){
@@ -82,6 +83,8 @@ std::string ConfigGenerator::getConfigString() {
         configString += sensor.type + "\n";
     }
     configString += "\n";
+
+    return configString;
 }
 
 void ConfigGenerator::generateConfig() {
@@ -98,8 +101,8 @@ void ConfigGenerator::generateConfig() {
     unitInfo.dataReadyPin = "22";
     unitInfo.spiSpeed = "19000000";
     unitInfo.restartADCPin = "12";
-    unitInfo.udpIp = "89.103.230.142";
-    unitInfo.tcpIp = "89.103.230.142";
+    unitInfo.udpIp = "192.168.1.16";
+    unitInfo.tcpIp = "92.168.1.16";
     unitInfo.tcpPort = "9944";
     unitInfo.udpPort = "9943";
 
@@ -109,5 +112,8 @@ void ConfigGenerator::generateConfig() {
 }
 
 void ConfigGenerator::saveConfig(std::string path) {
-
+    std::ofstream fileToWrite;
+    fileToWrite.open (unitInfo.uid);
+    fileToWrite << getConfigString();
+    fileToWrite.close();
 }
