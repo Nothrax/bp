@@ -1,6 +1,6 @@
 #!/bin/bash
 git_http="https://github.com/Nothrax/bp.git"
-local_path="/usr/local/bin/UnitSW"
+local_path="/usr/local/bin/bp"
 pi_password="0123456789"
 
 #deactivate script
@@ -59,8 +59,8 @@ cd /usr/local/bin/
 sudo mkdir UnitSW
 git clone $git_http $local_path
 
-sudo mv /usr/local/bin/UnitSW/bp/UnitSW/* /usr/local/bin/UnitSW/bp/UnitSW/
-sudo rm -r /usr/local/bin/UnitSW/bp
+sudo mv /usr/local/bin/bp/UnitSW/* /usr/local/bin/UnitSW/
+sudo rm -r /usr/local/bin/bp
 
 sudo mkdir /usr/local/bin/UnitSW/Reader/build
 sudo mkdir /usr/local/bin/UnitSW/Aggregation/build
