@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include "ConfigGenerator.h"
+#define SENSOR_TYPE_ACC 173
 
 ConfigGenerator::ConfigGenerator(Arguments arguments){
     this->arguments = arguments;
@@ -78,7 +79,9 @@ std::string ConfigGenerator::getConfigString() {
         configString += "sensor_" + std::to_string(sensor.sensorIndex) + "_output_disable_pin=";
         configString += sensor.outputDisablePin + "\n";
         configString += "sensor_" + std::to_string(sensor.sensorIndex) + "_sensitivity=";
-        configString += sensor.sensitivity + "\n";
+        if(sensor.sensitivity == "acc"){
+            configString += std::to_string(SENSOR_TYPE_ACC) + "\n";
+        }
         configString += "sensor_" + std::to_string(sensor.sensorIndex) + "_type=";
         configString += sensor.type + "\n";
     }
