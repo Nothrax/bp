@@ -1,9 +1,9 @@
 # comment
 
 # unit databases
-DBDataUser       AGGREGATION_SERVER
-DBDataPassword   bp_aggregation
-DBDataAddress    172.16.23.178
+DBDataUser       admin
+DBDataPassword   bp_influx
+DBDataAddress    127.0.0.1
 
 verbose          1
 serverPort       11111

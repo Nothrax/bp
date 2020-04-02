@@ -113,12 +113,12 @@ void Database::parseUnitResults() {
 }
 
 void Database::performSensorsQuery() {
-    std::string query = "SELECT * FROM Sensor WHERE unit_uid = " + config.uid;
+    std::string query = "SELECT * FROM Sensor WHERE unit_uid = '" + config.uid + "'";
     res = queryStatementSelect(query);
 }
 
 void Database::performUnitQuery() {
-    std::string query = "SELECT * FROM Unit WHERE uid = " + config.uid;
+    std::string query = "SELECT * FROM Unit WHERE uid = '" + config.uid + "'";
     res = queryStatementSelect(query);
 }
 
