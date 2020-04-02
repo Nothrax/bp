@@ -119,4 +119,8 @@ void ConfigGenerator::saveConfig(std::string path) {
     fileToWrite.open (unitInfo.uid);
     fileToWrite << getConfigString();
     fileToWrite.close();
+
 }
+=======
+}
+>>>>>>> 4b0cd95884b07e8621c22e1d923e9ff5e52cff9e
