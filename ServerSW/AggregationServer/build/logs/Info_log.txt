@@ -1,1 +1,0 @@
-[2020-04-04 11:33:45.602] [Aggregation_server] [info] UDP server binded to port 9944.
