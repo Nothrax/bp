@@ -115,3 +115,9 @@ void UDPClient::sendUDPMessage() {
         udpMessage.sensor[i].dataSize = 0;
     }
 }
+
+void UDPClient::encryptMessage() {
+    for(int i = 0; i < 512; i++) {
+        data[i] = data[i] ^ xorKey[i];
+    }
+}

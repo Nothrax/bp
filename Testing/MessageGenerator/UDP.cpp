@@ -16,6 +16,7 @@ UDP::UDP(Arguments arguments, uint32_t uid, uint32_t numberOfMessages){
 
 void UDP::startSending() {
     createUDPMessage();
+    encryptMessage();
     initSocket();
 
     for(int i = 0; i < numberOfMessages; i++){
@@ -101,11 +102,29 @@ void UDP::createUDPMessage() {
 }
 
 void UDP::sendUDPMessage() {
+    if(encrypt){
+        data[6] ^= xorKey[6];
+        data[7] ^= xorKey[7];
+        data[8] ^= xorKey[8];
+        data[9] ^= xorKey[9];
+    }
     memcpy(&data[6], &udpMessage.timestamp, sizeof(udpMessage.timestamp));
+    if(encrypt){
+        data[6] ^= xorKey[6];
+        data[7] ^= xorKey[7];
+        data[8] ^= xorKey[8];
+        data[9] ^= xorKey[9];
+    }
     int returnCode = sendto(clientSocket, data, dataSize, 0, (struct sockaddr *)&serverAddr, serverlen);
     if (returnCode < 0){
         std::cerr << "ERROR in sendto\n";
     }
 
     udpMessage.timestamp++;
+}
+
+void UDP::encryptMessage() {
+    for(int i = 0; i < 512; i++) {
+        data[i] ^= xorKey[i];
+    }
 }

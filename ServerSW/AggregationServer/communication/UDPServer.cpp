@@ -54,5 +54,11 @@ Message* UDPServer::receiveMessage() {
     std::string address(inet_ntoa(client_address.sin_addr));
     int clientPort = ntohs(client_address.sin_port);
 
+    if(encryption){
+        for(int i = 0; i < 512; i++){
+            buf[i] ^= xorKey[i];
+        }
+    }
+
     return new Message(buf, received, address, clientPort);
 }

@@ -36,6 +36,7 @@ private:
 
     void createUDPMessage();
     void sendUDPMessage();
+    void encryptMessage();
 };
 
 

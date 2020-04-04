@@ -25,6 +25,7 @@ private:
     int server_socket;
     int port;
     struct sockaddr_in client_address;
+    bool encryption = true;
 
     void initializeUDPServer();
 };
