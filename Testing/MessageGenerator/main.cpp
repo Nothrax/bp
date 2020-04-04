@@ -16,7 +16,8 @@ int main(int argc, char **argv) {
 
     for(int threadIndex = 0; threadIndex < arguments.numberOfUnits; threadIndex++){
         uint32_t wait = rand() % arguments.milliseconds;
-        threads[threadIndex] = std::thread(SenderThread::startThread, arguments, threadIndex, 2);
+	uint32_t numberOfMessages = 60000/arguments.milliseconds;
+        threads[threadIndex] = std::thread(SenderThread::startThread, arguments, threadIndex, numberOfMessages);
         std::cout << wait << " sleeping\n";
         usleep(wait*1000);
         //SenderThread::startThread(arguments, 0, 10);
