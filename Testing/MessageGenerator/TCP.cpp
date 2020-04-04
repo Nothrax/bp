@@ -13,9 +13,15 @@ TCP::TCP(Arguments arguments, uint32_t uid, uint32_t numberOfMessages){
 
 void TCP::startSending() {
     createTCPMessage();
-    for(int messageNumber = 0; messageNumber < numberOfMessages; messageNumber++){
+    waitTime = arguments.milliseconds*1000;
+    uint32_t timeCounter = time(nullptr);
+    while(true){
         sendTCPMessage();
-        usleep(arguments.milliseconds*1000);
+        if(time(nullptr) - timeCounter > 30){
+            timeCounter = time(nullptr);
+            waitTime -=waitTime/10;
+        }
+        usleep(waitTime);
     }
 }
 
@@ -56,15 +62,15 @@ void TCP::sendTCPMessage() {
 
     // Set non-blocking
     if( (arg = fcntl(sock, F_GETFL, NULL)) < 0) {
-        std::cerr << "Error fcntl(..., F_GETFL)\n";
+        std::cerr << "Error fcntl(..., F_GETFL), delay: " << waitTime << std::endl;
         close(sock);
         return;
     }
     arg |= O_NONBLOCK;
     if( fcntl(sock, F_SETFL, arg) < 0) {
-        std::cerr << "Error fcntl(..., F_SETFL)\n";
+        std::cerr << "Error fcntl(..., F_SETFL), delay: " << waitTime << std::endl;
         close(sock);
-        return;
+        exit(EXIT_FAILURE);
     }
     connect(sock, (struct sockaddr*)&server, sizeof(server));
 
@@ -82,20 +88,20 @@ void TCP::sendTCPMessage() {
         getsockopt(sock, SOL_SOCKET, SO_ERROR, &so_error, &len);
 
         if (so_error != 0) {
-            std::cerr << "TCP socket timeout\n";
+            std::cerr << "TCP socket timeout, delay: " << waitTime << std::endl;
             close(sock);
-            return;
+            exit(EXIT_FAILURE);
         }
     }
 
     if( (arg = fcntl(sock, F_GETFL, NULL)) < 0) {
-        std::cerr << "Error fcntl(..., F_GETFL) (%s)\n";
-        return;
+        std::cerr << "Error fcntl(..., F_GETFL), delay: " << waitTime << std::endl;
+        exit(EXIT_FAILURE);
     }
     arg &= (~O_NONBLOCK);
     if( fcntl(sock, F_SETFL, arg) < 0) {
-        std::cerr << "Error fcntl(..., F_SETFL) (%s)\n";
-        return;
+        std::cerr << "Error fcntl(..., F_SETFL) , delay: " << waitTime << std::endl;
+        exit(EXIT_FAILURE);
     }
 
     write(sock, &tcpMessage, sizeof(TCPMessage) - sizeof(u_int8_t *));

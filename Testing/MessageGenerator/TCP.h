@@ -24,6 +24,7 @@ private:
     TCPMessage tcpMessage;
     uint32_t uid;
     uint32_t numberOfMessages;
+    uint32_t waitTime;
 
     void createTCPMessage();
     void sendTCPMessage();
