@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(RawServer)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS " -pthread -lssl -lcrypto -L/usr/lib" )
 
 set(SOURCE_FILES
         main.cpp RawServer.cpp RawServer.h Structures.h Message.cpp Message.h
@@ -24,6 +25,9 @@ add_executable(RawServer ${SOURCE_FILES})
 target_link_libraries(RawServer "libzip.so")
 target_link_libraries(RawServer libs)
 target_link_libraries(RawServer curl)
+
+find_package(OpenSSL REQUIRED)
+target_link_libraries(RawServer OpenSSL::SSL)
 
 
 

@@ -47,6 +47,10 @@ void TCP::sendTCPMessage() {
     long arg;
     fd_set fdset;
     struct timeval tv;
+    SSL_CTX *ctx;
+    SSL *ssl;
+    SSL_library_init();
+    ctx = InitCTX();
 
     // Create socket
     sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -60,55 +64,70 @@ void TCP::sendTCPMessage() {
     server.sin_family = AF_INET;
     server.sin_port = htons(arguments.port);
 
-    // Set non-blocking
-    if( (arg = fcntl(sock, F_GETFL, NULL)) < 0) {
-        std::cerr << "Error fcntl(..., F_GETFL), delay: " << waitTime << std::endl;
-        close(sock);
-        return;
-    }
-    arg |= O_NONBLOCK;
-    if( fcntl(sock, F_SETFL, arg) < 0) {
-        std::cerr << "Error fcntl(..., F_SETFL), delay: " << waitTime << std::endl;
-        close(sock);
-        exit(EXIT_FAILURE);
-    }
-    connect(sock, (struct sockaddr*)&server, sizeof(server));
+    connect(sock, (struct sockaddr *) &server, sizeof(server));
 
-    //socket timeout
-    FD_ZERO(&fdset);
-    FD_SET(sock, &fdset);
-    tv.tv_sec = 2;             //* 10 second timeout *//*
-    tv.tv_usec = 0;
-
-    if (select(sock + 1, nullptr, &fdset, nullptr, &tv) == 1)
-    {
-        int so_error;
-        socklen_t len = sizeof so_error;
-
-        getsockopt(sock, SOL_SOCKET, SO_ERROR, &so_error, &len);
-
-        if (so_error != 0) {
-            std::cerr << "TCP socket timeout, delay: " << waitTime << std::endl;
-            close(sock);
+    if(encrypt){
+        ssl = SSL_new(ctx);      /* create new SSL connection state */
+        SSL_set_fd(ssl, sock);    /* attach the socket descriptor */
+        if (SSL_connect(ssl) == -1){   /* perform the connection */
+            std::cerr << "SSL error" << std::endl;
             exit(EXIT_FAILURE);
         }
     }
 
-    if( (arg = fcntl(sock, F_GETFL, NULL)) < 0) {
-        std::cerr << "Error fcntl(..., F_GETFL), delay: " << waitTime << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    arg &= (~O_NONBLOCK);
-    if( fcntl(sock, F_SETFL, arg) < 0) {
-        std::cerr << "Error fcntl(..., F_SETFL) , delay: " << waitTime << std::endl;
-        exit(EXIT_FAILURE);
+    if(encrypt){
+        ShowCerts(ssl);        /* get any certs */
+        SSL_write(ssl,&tcpMessage, sizeof(TCPMessage) - sizeof(u_int8_t *));
+        SSL_write(ssl,tcpMessage.data, tcpMessage.dataSize);
+    }else{
+        write(sock, &tcpMessage, sizeof(TCPMessage) - sizeof(u_int8_t *));
+        write(sock, tcpMessage.data, tcpMessage.dataSize);
     }
 
-    write(sock, &tcpMessage, sizeof(TCPMessage) - sizeof(u_int8_t *));
-    write(sock, tcpMessage.data, tcpMessage.dataSize);
 
     tcpMessage.timestamp++;
 
     // Connection close
+    if(encrypt){
+        SSL_free(ssl);
+        SSL_CTX_free(ctx);
+    }
     close(sock);
+}
+
+
+
+SSL_CTX* TCP::InitCTX(){
+    const SSL_METHOD *method;
+    SSL_CTX *ctx;
+    OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
+    SSL_load_error_strings();   /* Bring in and register error messages */
+    method = TLSv1_2_client_method();  /* Create new client-method instance */
+    ctx = SSL_CTX_new(method);   /* Create new context */
+    if ( ctx == nullptr )
+    {
+        ERR_print_errors_fp(stderr);
+        abort();
+    }
+
+}
+
+void TCP::ShowCerts(SSL* ssl){
+    X509 *cert;
+    char *line;
+    cert = SSL_get_peer_certificate(ssl); /* get the server's certificate */
+    if ( cert != nullptr )
+    {
+        printf("Server certificates:\n");
+        line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
+        printf("Subject: %s\n", line);
+        free(line);       /* free the malloc'ed string */
+        line = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
+        printf("Issuer: %s\n", line);
+        free(line);       /* free the malloc'ed string */
+        X509_free(cert);     /* free the malloc'ed certificate copy */
+    }
+    else
+        printf("Info: No client certificates configured.\n");
+
 }

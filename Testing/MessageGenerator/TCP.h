@@ -12,7 +12,16 @@
 #include <unistd.h>
 #include <iostream>
 #include <fcntl.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <malloc.h>
+#include <sys/socket.h>
+#include <resolv.h>
+#include <netdb.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 
+//open-ssl communication from https://aticleworld.com/ssl-server-client-using-openssl-in-c/
 class TCP {
 public:
     TCP(Arguments arguments, uint32_t uid, uint32_t numberOfMessages);
@@ -25,9 +34,12 @@ private:
     uint32_t uid;
     uint32_t numberOfMessages;
     uint32_t waitTime;
+    bool encrypt = true;
 
     void createTCPMessage();
     void sendTCPMessage();
+    SSL_CTX* InitCTX();
+    void ShowCerts(SSL* ssl);
 };
 
 

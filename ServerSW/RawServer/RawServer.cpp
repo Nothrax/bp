@@ -18,11 +18,14 @@ RawServer::RawServer(Config serverArguments) {
 
 void RawServer::startRawServer() {
     tcpServer->startTCPServer(serverArguments.port);
-
+    uint32_t receivedMessages = 0;
+    uint32_t startTime = time(nullptr);
     while(true){
         tcpServer->waitForConnection();
 
         handleNewConnection();
+        receivedMessages++;
+        std::cout << receivedMessages << " " <<  time(nullptr) - startTime << std::endl;
     }
 }
 void RawServer::handleNewConnection() {
