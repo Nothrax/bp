@@ -16,7 +16,9 @@ UDP::UDP(Arguments arguments, uint32_t uid, uint32_t numberOfMessages){
 
 void UDP::startSending() {
     createUDPMessage();
-    encryptMessage();
+    if(encrypt){
+        encryptMessage();
+    }
     initSocket();
 
     for(int i = 0; i < numberOfMessages; i++){

@@ -5,17 +5,28 @@
 #include "File.h"
 
 void File::start() {
+    SHMRawWrite *buffer = new SHMRawWrite(config);
+    buffer->openSharedMemory();
+
     bcm2835_gpio_set_eds(22);//clear the previous event. makes sure that only next event is detected
-    while(!bcm2835_gpio_eds(22));//waits until next event/tick
-    //input.read((char *)buffer, size);
+
+    while(true){
+        bcm2835_gpio_set_eds(config.dataReadyPin);//clear the previous event. makes sure that only next event is detected
+        while(!bcm2835_gpio_eds(config.dataReadyPin));//waits until next event/tick
+
+        input.read((char *)&default_rx[3], 12);
+        buffer->addMeasurement(default_rx) ;
+    }
+    bcm2835_gpio_set_eds(config.dataReadyPin);
+    bcm2835_gpio_clr_afen(config.dataReadyPin);
+
 }
 
-//todo moznost zmeny frekvence?
 void File::setUp() {
     input.open(config.dataFilePath);
     gpioInitialise();
     if(gpioHardwareClock(4, config.frequency) < 0) {
-        //todo lognuti chyby
+        Logger::logError("Failed to set output data ready frequency");
     }
     bcm2835_init();
     bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);

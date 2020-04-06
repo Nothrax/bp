@@ -8,10 +8,8 @@
 void SPI::start() {
     SHMRawWrite *buffer = new SHMRawWrite(config);
     buffer->openSharedMemory();
-    std::time_t t = std::time(nullptr);
     bcm2835_gpio_set_eds(config.dataReadyPin);
     bcm2835_gpio_afen(config.dataReadyPin);
-    //for(int i = 0; i < 12800000; i++){
 
     while(true){
         bcm2835_gpio_set_eds(config.dataReadyPin);//clear the previous event. makes sure that only next event is detected
@@ -22,8 +20,6 @@ void SPI::start() {
     }
     bcm2835_gpio_set_eds(config.dataReadyPin);
     bcm2835_gpio_clr_afen(config.dataReadyPin);
-    printf("Zapsano 2*500 buferu o 1280 hodnotach\n");
-    std::cout << "cas potrebny ke cteni:" << std::time(nullptr) - t << std::endl;
 }
 
 

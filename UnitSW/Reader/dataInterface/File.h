@@ -14,6 +14,8 @@
 #include <bcm2835.h>
 #include "../abstractClass/InterfaceReader.h"
 #include "structures.h"
+#include "sharedMemory/SHMRawWrite.h"
+#include <Logger/Logger.h>
 
 class File : public InterfaceReader{
 public:
@@ -24,6 +26,7 @@ public:
 private:
     std::fstream input;
     Config config;
+    unsigned char default_rx[18] = {0, };
 
 };
 
