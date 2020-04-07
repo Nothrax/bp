@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="Reader"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Reader">
+				<Option output="/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Reader" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/nothrax/Documents/bp/UnitSW/Reader/."/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 Reader"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Reader/fast">
+				<Option output="/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Reader" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/nothrax/Documents/bp/UnitSW/Reader/."/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 Reader/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/nothrax/Documents/bp/UnitSW/Reader/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/Logger/Logger.cpp">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/Logger/Logger.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/TCPClient.cpp">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/TCPClient.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/abstractClass/InterfaceReader.cpp">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/abstractClass/InterfaceReader.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/configReader/Configuration.cpp">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/configReader/Configuration.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/configReader/INIReader.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/configReader/ini.c">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/configReader/ini.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/dataInterface/File.cpp">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/dataInterface/File.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/dataInterface/SPI.cpp">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/dataInterface/SPI.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/filter/Filter.cpp">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/filter/Filter.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/filter/arm_fir_decimate.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/filter/arm_fir_decimate_init_q31.c">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/filter/arm_fir_decimate_q31.c">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/main.cpp">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/sharedMemory/SHMAggregationWrite.cpp">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/sharedMemory/SHMAggregationWrite.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/sharedMemory/SHMRawRead.cpp">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/sharedMemory/SHMRawRead.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/sharedMemory/SHMRawWrite.cpp">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/sharedMemory/SHMRawWrite.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/structures.h">
+			<Option target="Reader"/>
+		</Unit>
+		<Unit filename="/home/nothrax/Documents/bp/UnitSW/Reader/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
