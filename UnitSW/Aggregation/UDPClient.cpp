@@ -1,5 +1,5 @@
 //
-// Created by root on 24.02.20.
+// Created by Jakub Trubka on 24.02.20.
 //
 
 #include <arpa/inet.h>

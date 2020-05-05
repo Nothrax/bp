@@ -9,7 +9,6 @@
 #include "parameters/configParamsGetter.h"
 
 
-//todo jak vypada zprava
 class Message {
 public:
     Message(uint8_t *data, unsigned int bytesReceived, std::string address, int port);

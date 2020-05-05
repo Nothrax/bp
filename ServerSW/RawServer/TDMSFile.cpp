@@ -112,7 +112,6 @@ void TDMSFile::writeObject(string path, uint32_t rawDataIndex, uint32_t numberOf
                 longBinvalue = (message->getRawDataSize()/message->getNumberOfChannels()) / PROTOCOL_1_VALUE_SIZE;
                 break;
             default:
-                //todo logovat chybu
                 break;
         }
         fwrite(&longBinvalue, sizeof(uint64_t), 1, tdmsFile);
@@ -159,7 +158,6 @@ void TDMSFile::writeRawData() {
             }
             break;
         default:
-            //todo toto logovat
             cerr << "Unknown protocol number\n";
             break;
     }
@@ -183,7 +181,6 @@ void TDMSFile::generateChannelDescription(){
         if(channelsPresense[i]){
             std::ostringstream buff;
             buff<<channels[i].adc;
-            //todo senzory brat od 0 nebo 1??
             channels[i].description = "{\"id\":" + to_string(channels[i].id)
                                     + ",\"sf\":"  + to_string(channels[i].sf)
                                     + ",\"adc\":" + buff.str()
@@ -208,7 +205,6 @@ void TDMSFile::fillChannelInformation() {
                     message->getMeasureDuration();
             break;
         default:
-            //todo log warning or error
             break;
     }
 
@@ -234,7 +230,6 @@ void TDMSFile::calculateOffsets() {
             dataLen = rawDataOffset + message->getRawDataSize();// + message->getRawDataSize()/PROTOCOL_1_VALUE_SIZE;
             break;
         default:
-            //todo log warning or error
             break;
     }
 

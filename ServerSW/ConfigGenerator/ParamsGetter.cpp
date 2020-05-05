@@ -48,7 +48,6 @@ int getNumber(const std::string &value, int &number) {
         }
         return 0;
     }catch (std::logic_error &e) {
-        //todo logovani
         Logger::logError("Cannot parse number from arguments fle");
         return -1;
     }

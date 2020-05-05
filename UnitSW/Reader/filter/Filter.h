@@ -1,5 +1,5 @@
 //
-// Created by root on 06.02.20.
+// Created by Jakub Trubka on 06.02.20.
 //
 
 #ifndef BP_FILTER_H

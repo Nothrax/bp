@@ -11,7 +11,6 @@
 
 #include "FileCompressor.h"
 
-//todo kontrola - pokud soubor existuje padne
 void FileCompressor::makeZip(std::string filename) {
     int error = 0;
     zip *archive = zip_open((filename + ".zip").c_str(), ZIP_CREATE, &error);

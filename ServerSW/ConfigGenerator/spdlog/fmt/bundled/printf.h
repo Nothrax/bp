@@ -683,7 +683,6 @@ void basic_printf_context<OutputIt, Char, AF>::format() {
         spec.type = 'd';
         break;
       case 'c':
-        // TODO: handle wchar_t better?
         visit_format_arg(
               internal::char_converter<basic_printf_context>(arg), arg);
         break;

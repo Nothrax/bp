@@ -1,5 +1,5 @@
 //
-// Created by root on 18.02.20.
+// Created by Jakub Trubka on 18.02.20.
 //
 
 #ifndef AGGREGATION_SHMAGGREGATIONREAD_H

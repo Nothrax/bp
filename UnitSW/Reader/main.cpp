@@ -9,7 +9,6 @@
 #include "sharedMemory/SHMRawWrite.h"
 #define DATA_SIZE 12
 
-//todo config path brat z argumentu
 
 int main(int argc, char **argv) {
     if(argc != 3){

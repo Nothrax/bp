@@ -1,5 +1,5 @@
 //
-// Created by nothrax on 20.01.20.
+// Created by Jakub Trubka on 20.01.20.
 //
 #include <string>
 

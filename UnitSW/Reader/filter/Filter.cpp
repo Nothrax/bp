@@ -1,5 +1,5 @@
 //
-// Created by root on 06.02.20.
+// Created by Jakub Trubka on 06.02.20.
 //
 
 #include "Filter.h"
@@ -28,7 +28,6 @@ void Filter::start() {
             for(int sensorIndex = 0; sensorIndex < NUMBER_OF_SENSORS; sensorIndex++){
                 arm_fir_decimate_q31(&firInstance[sensorIndex], &channelBlocks[sensorIndex*128000*config.bufferLengthInSeconds], &outputData[sensorIndex*8000*config.bufferLengthInSeconds], blockSize);
             }
-            //todo vlozeni outputu do sdilene pameti
         }
 
         if(config.raw){
@@ -44,39 +43,6 @@ void Filter::start() {
         }
     }
 }
-
-    /*              for(int i = 0; i < NUMBER_OF_SENSORS; i++){
-                 std::ofstream raw, sdf;
-                 raw.open ("/home/pi/rawData/128khz_sensor_" + std::to_string(i) + ".csv");
-                 for(int j = 0; j < 128000*config.bufferLengthInSeconds; j++){
-                     raw << channelBlocks[j+i*128000*config.bufferLengthInSeconds] <<"\n";
-                 }
-                 raw.close();
-
-                 sdf.open("/home/pi/rawData/8khz_sensor_" + std::to_string(i) + ".csv");
-                 for(int j = 0; j < 8000*config.bufferLengthInSeconds; j++){
-                     sdf << outputData[j+i*8000*config.bufferLengthInSeconds] <<"\n";
-                 }
-                 sdf.close();
-             }*/
-    //printf("Precteno 2*500 buferu o 1280 hodnotach cas \n");
-    //std::cout << "cas potrebny ke zpracovani:" << std::time(nullptr) - t << std::endl;
-
-    //todo remove
-/*    for(int i = 0; i < NUMBER_OF_SENSORS; i++){
-        std::ofstream raw, sdf;
-        raw.open ("/home/pi/rawData/128khz_sensor_" + std::to_string(i) + ".csv");
-        for(int j = 0; j < 128000*config.bufferLengthInSeconds; j++){
-            raw << channelBlocks[j+i*128000*config.bufferLengthInSeconds] <<"\n";
-        }
-        raw.close();
-
-        sdf.open("/home/pi/rawData/8khz_sensor_" + std::to_string(i) + ".csv");
-        for(int j = 0; j < 8000*config.bufferLengthInSeconds; j++){
-            sdf << outputData[j+i*8000*config.bufferLengthInSeconds] <<"\n";
-        }
-        sdf.close();
-    }*/
 
 
 void Filter::initialize() {

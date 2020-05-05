@@ -47,7 +47,6 @@ void createLogger(bool verbose) {
 
     auto mdbrkLogger = std::make_shared<spdlog::logger>("Raw_server", begin(sinks), end(sinks));
 
-    //todo change to error
     mdbrkLogger->flush_on(spdlog::level::info);
 
     spdlog::register_logger(mdbrkLogger);

@@ -5,7 +5,6 @@
 
 #include "AggregationServer.h"
 
-//todo valgrind a uniky pamety
 void AggregationServer::startAggregationServer() {
     while(true){
         waitForMessage();

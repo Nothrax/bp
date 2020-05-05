@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/nothrax/Documents/bp/Testing/Encoder/DeltaEncode.cpp
+iostream
+-
+cstring
+-
+DeltaEncode.h
+/home/nothrax/Documents/bp/Testing/Encoder/DeltaEncode.h
+
+/home/nothrax/Documents/bp/Testing/Encoder/DeltaEncode.h
+string
+-
+fstream
+-
+list
+-
+cmath
+-
+bitset
+-
+Structures.h
+/home/nothrax/Documents/bp/Testing/Encoder/Structures.h
+
+/home/nothrax/Documents/bp/Testing/Encoder/Structures.h
+

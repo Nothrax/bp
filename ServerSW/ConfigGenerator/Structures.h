@@ -37,7 +37,6 @@ struct UnitInfo{
     std::string delta;          //database
     std::string period;         //database
     std::string meanAverage;           //database
-    //todo sensory
 };
 
 struct SensorInfo{

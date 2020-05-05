@@ -36,7 +36,6 @@ void RawServer::handleNewConnection() {
         exit(EXIT_FAILURE);
     }
 
-    //todo change logic to == 0
     if(pid == 0){   //child process
 
         binaryMessage = tcpServer->receiveMessage();

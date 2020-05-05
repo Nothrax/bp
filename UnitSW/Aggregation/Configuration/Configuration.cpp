@@ -4,7 +4,6 @@
 
 #include "Configuration.h"
 
-//todo logovani
 Config Configuration::loadConfig(std::string configFilePath) {
     Config config;
     INIReader reader(configFilePath);
@@ -45,7 +44,6 @@ Config Configuration::loadConfig(std::string configFilePath) {
         config.tcpIp = reader.Get("server", "tcp_ip", "UNKNOWN");
         config.tcpPort = reader.GetInteger("server", "tcp_port", -1);
 
-        //todo cteno do for cyklu na NUMBER OF CHANNELS
         //SENSOR section
         config.sensorActive[0] = reader.GetBoolean("sensor", "sensor_0", false);
         config.sensorActive[1] = reader.GetBoolean("sensor", "sensor_1", false);

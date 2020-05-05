@@ -44,7 +44,6 @@ void SPI::setRegisterSafe(unsigned char *transferRegister, unsigned char *receiv
         second = received[1];
     } while(first != receiveRegister[0] && second != receiveRegister[1] && ++count < 10);
     if(count == 10) {
-        //todo vlozit hexa hodnoty registru
         Logger::logError("Setup error " + setupPart);
         exit(EXIT_FAILURE);
     };

@@ -1,5 +1,5 @@
 //
-// Created by root on 13.02.20.
+// Created by Jakub Trubka on 13.02.20.
 //
 
 #ifndef BP_TCPCLIENT_H

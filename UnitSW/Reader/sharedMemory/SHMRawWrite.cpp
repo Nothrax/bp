@@ -1,5 +1,5 @@
 //
-// Created by root on 04.02.20.
+// Created by Jakub Trubka on 04.02.20.
 //
 
 #include "SHMRawWrite.h"
@@ -38,7 +38,6 @@ void SHMRawWrite::openSharedMemory() {
     actualWriteBuffer = rawBuffer1;
 }
 
-//todo dat vypocet velikosti sdilene pameti
 void SHMRawWrite::initializeSharedMemory(Config config) {
     using namespace boost::interprocess;
     shared_memory_object::remove("RawBuffer1");
@@ -57,7 +56,6 @@ void SHMRawWrite::initializeSharedMemory(Config config) {
 }
 
 void SHMRawWrite::switchBuffers() {
-    //todo semafory
     sharedMemoryIndex = 0;
 
     if(rawBuffer1 == actualWriteBuffer){

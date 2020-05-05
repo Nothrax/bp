@@ -1,5 +1,5 @@
 //
-// Created by root on 13.02.20.
+// Created by Jakub Trubka on 13.02.20.
 //
 
 #include "TCPClient.h"
@@ -34,8 +34,6 @@ void TCPClient::sendMessage(uint8_t *buffer, uint32_t time) {
     tcpMessage.timestamp = time;
     int sock;
     struct sockaddr_in server;
-
-    //todo copy data to send buffer?
 
     // Create socket
     sock = socket(AF_INET, SOCK_STREAM, 0);

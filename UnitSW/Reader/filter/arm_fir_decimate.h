@@ -1,5 +1,5 @@
 //
-// Created by root on 04.02.20.
+// Created by Jakub Trubka on 04.02.20.
 //
 #pragma once
 

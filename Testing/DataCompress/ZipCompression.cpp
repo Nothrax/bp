@@ -1,5 +1,5 @@
 //
-// Created by nothrax on 11.04.20.
+// Created by Jakub Trubka on 11.04.20.
 //
 
 #include "ZipCompression.h"

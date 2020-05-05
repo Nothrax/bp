@@ -1,0 +1,3 @@
+/home/nothrax/Documents/bp/Testing/Encoder/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/nothrax/Documents/bp/Testing/Encoder/cmake-build-debug/CMakeFiles/Encoder.dir
+/home/nothrax/Documents/bp/Testing/Encoder/cmake-build-debug/CMakeFiles/edit_cache.dir
