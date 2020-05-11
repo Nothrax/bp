@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/Encoder.dir/main.cpp.o CMakeFiles/Encoder.dir/DeltaEncode.cpp.o  -o Encoder 

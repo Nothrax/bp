@@ -1,0 +1,206 @@
+\chapter{Implementace}\label{kap:implementation}
+Tato kapitola popisuje implementaci jednotlivých programů, popsaných v~návrhu. Kromě popisu implementace kódové části a ukázky nejzajímavějších částí kódu, se kapitola věnuje i postupu instalace a přípravy jednotlivých částí a návodům. Návody jsou umístěny v~přílohách.
+
+\section{Server}
+Jako operační systém pro server byla zvolena linuxová distribuci Ubuntu, respektive Ubuntu server. Zvolena byla z~důvodu její rozšířenosti, podpory a dostupnosti použitých knihoven. Některé příkazy použité při instalaci a přípravu serveru jsou v~umístěny v~příloze \ref{att:server_install}. 
+
+\subsection{Příprava serveru}
+Po instalaci operačního systému je vhodné povolit vzdálený přístup přes SSH (Secure Shel) pro možnost vzdálené správy. Zároveň je vhodné změnit port služby, aby bylo možné přistupovat k~více zařízení v~jedné síti přes SSH z~internetu a z~bezpečnostních důvodů deaktivovat účet \textit{root}. Port je potřeba povolit a pro přístup z~vnější sítě je nutné nastavit na routeru přesměrování portu na daný server. Jednotlivé příkazy jsou vypsány v~\ref{att:ssh}. Veškeré použité knihovny a příkazy k~jejich instalaci jsou v~příloze \ref{att:server_libs}.
+
+\subsection{Časová databáze}
+Při instalaci a nastavení časové databáze IfluxDB a webového rozhraní Chronograf bylo postupováno podle oficiální dokumentace\footnote{https://docs.influxdata.com/}. Po instalaci je vhodné upravit nastavení v~konfiguračním souboru \textit{/etc/influxdb/influxdb.conf}. V~souboru je nutné nastavit IP adresu, port a zapnout HTTP API s~autorizací. V~konfiguračním souboru lze nastavit i zálohování, dobu uchovávání dat a podobně. InfluxDB ukládá a čte data z~velkého množství souborů a proto je nezbytné zvýšit limit otevřených souborů pro proces. Pokud se neprovede zvýšení limitu, tak se databáze po vložení určitého množství dat stane nespustitelnou. Nespustitelnou zůstane až do navýšení limitu, protože nedokáže otevřít veškeré požadované soubory. Pro zvýšení limitu je potřeba v~souboru \textit{/etc/systemd/system/influxd.service} upravit nebo přidat řádek \textit{LimitNOFILE=infinity}. Dále je nezbytné v~souboru \textit{/etc/security/limits.conf} upravit limity pro uživatele a do terminálu zadat příkaz \textit{sudo sysctl -w fs.file-max=65000} a následně restartovat počítač.  Zvýšení limitu lze zkontrolovat příkazem \textit{grep files /proc/<influxdb pid>/limits}. Pokud se zvýšení provedlo, je hodnota limitu vyšší než jeden milion.
+
+V~dalším kroku je potřeba vytvořit účty a tím zamezit přístupu k~databázi bez hesla. Do časové databáze se v~terminálu připojuje příkazem \textit{influx -username <username> -password <password>}, pokud není vytvořen žádný účet není nutné použít parametry účtu a hesla. Administrátorský účet se vytváří pomocí příkazu \textit{CREATE USER <username> WITH PASSWORD '<password>' WITH ALL PRIVILEGES}. Jednotlivé aplikace přistupující k~databázi mají své vlastní účty s~nezbytnými právy. 
+
+Pro zobrazování dat z~databáze je využita webová aplikace Chronograf dostupná s~databází Influx. Aplikace je určena pouze pro lokální zobrazování dat a přístup do Chronografu nelze omezit pomocí přihlašovacích údajů. Přihlašovací údaje k~databázi má uloženy globálně pro všechna připojení. Z~důvodu testování je vytvořen pro aplikaci účet s~právy pro čtení, aby bylo umožněno k~zobrazení dat přistupovat i mimo lokální síť. Při každém vytvoření nové databáze je potřeba jednotlivým uživatelským účtům (mimo administrátorké účty) přiřadit práva k~nové databázi. Z~toho důvodu byl vytvořen skript \textit{privileges.sh}, který automaticky jednotlivým účtům přidá určená práva k~datovým databázím s~názvem ve formátu \textit{dat\_<UID>}, a tím usnadní přidávání nových databází. Skript je umístěn na přiloženém médiu. Chronograf je po spuštění dostupný pomocí lokálních webových stránek na portu $8888$. Pro zobrazení dat je nutné se připojit pomocí účtu vytvořeném v~InfluxDB. Pro přístup k~Chronografu mimo lokální síť, je nezbytné na routeru nastavit přesměrování portu $8888$ na zařízení s~databází.
+
+\subsection{Relační databáze}
+Pro relační databázi byla zvolena MariaDB s~webovým rozhraním Adminer. Pro snadnější instalaci je na přiloženém médiu skript \textit{mariadb.sh}, který provede kompletní instalaci obou aplikací. Skript nainstaluje mariaDB, PHP, curl a webový server nginx. Dále vytvoří složku \textit{/var/www/html/sql} pro webové rozhraní Adminer. Do složky je stažena aplikace Adminer, dojde k~přidání informací o~webovém serveru do konfiguračního souboru \textit{/etc/nginx/sites-enabled/default} a \textit{/etc/hosts} a k~dalším nutným úpravám konfiguračních souborů nginx a PHP pro zprovoznění webové aplikace Adminer. Po instalaci mariaDB je přidán administrátorský účet (přihlašovací údaje lze nalézt ve skriptu) a služby jsou spuštěny. Webové rozhraní pro správu databáze je dostupné na portu $9999$. Databáze vytvořená podle návrhu \ref{pic:relation_design} je v~exportované podobě bez hodnot uložená na přiloženém médiu v~soubor \textit{bp\_mariadb.sql}.
+
+\subsection{TCPServer}
+Program se spouští s~argumenty \textit{-p <port>} pro nastavení portu na kterém má TCP server naslouchat a \textit{-v} pro výpis logů do konzole. Program nevyužívá žádný konfigurační soubor. Pro logování je využita knihovna spdlog\footnote{https://github.com/gabime/spdlog}. Knihovna se skládá pouze z~hlavičkových souborů a není proto nutná její instalace. Ukládání logů rozdělených na informační a chybové se provádí do několika rotujících souborů o~maximální velikosti 5 MB. Po spuštění provede program inicializaci soketu a čeká na připojení. Při navázání spojení od klienta dojde k~vytvoření nového procesu. Původní proces čeká na připojení dalšího klienta a nově vzniklý proces provede příjem a zpracování zprávy. Při příjmu dojde nejdříve k~uložení hlavičky paketu do struktury \ref{list:tcp_header}. Po načtení hlavičky se provede alokace ukazatele dat \textit{data} na velikost \textit{dataSize} a k~příjmu naměřených hodnot. 
+\begin{lstlisting}[style=c++, caption={Struktura pro příjem TCP zprávy.}, label={list:tcp_header}]
+#define NUMBER_OF_CHANNELS
+
+#pragma pack(push, 1)
+struct TCPMessage{
+    /* Header */
+    uint16_t version;
+    uint32_t uid;
+    uint16_t channelMask;
+    uint32_t timestamp;
+    uint32_t duration;
+    float adcConstant;
+    float sensitivity[NUMBER_OF_CHANNELS];
+    /* Data */
+    uint32_t dataSize;
+    uint8_t *data;
+};
+#pragma pack(pop)
+\end{lstlisting}
+Data TCP zprávy ve formě struktury jsou zpracována třídou \textit{Message}. Třída z~políčka \textit{channelMask} vyčte, které kanály jsou obsaženy ve zprávě a zkontroluje velikost dat a informace v~hlavičce. Pokud je zpráva poškozená, dojde k~zaznamenání chyby a zahození zprávy. Po zpracování je instance třídy \textit{Message} zastřešující přijatá data předána třídě \textit{TDMSFile}, která vytváří strukturu souboru ve formátu \textit{tdms}. Formát souboru se skládá ze tří částí: 
+\begin{itemize}
+    \item hlavička zvaná \textit{Lead In} obsahující informace o~verzi, velikosti dat a podobně,
+    \item sekce \textit{Meta Data} s~informacemi o~jednotlivých kanálech a
+    \item část \textit{Raw Data} s~daty z~kanálů uložených po blocích \cite{tdmsFileFormat}.
+\end{itemize}
+V~době psaní této práce nebyla k~dispozici žádná knihovna pro operační systém Linux a programovací jazyk C++, která by tvorbu těchto souborů umožňovala. Vytvořená třída \textit{TDMSFile}, starající se o~tvorbu souboru, neobsahuje plnou funkcionalitu pro práci se soubory, je totiž určena pouze k~vytvoření souboru s~pevně danou strukturou. Tato vlastnost umožnila třídu velice zjednodušit. Příkladem zjednodušení je tvorba hlavičky, která má pevnou délku a jediné části, u~kterých dochází ke změně je velikost a offset dat. Funkce pro zápis hlavičky do souboru vypadá následovně:
+\begin{lstlisting}[style=c++, caption={Funkce pro zápis hlavičky tdms souboru.}]
+#define TOC_MASK 0x0000000e
+#define TDMS_VERSION 0x00001269
+
+void TDMSFile::writeLeadIn() {
+    uint32_t tocMask = TOC_MASK;
+    uint32_t versionNumber = TDMS_VERSION;
+    //first 4 bytes is TDSm tag
+    fwrite("TDSm", sizeof(uint8_t), 4, tdmsFile);
+    //4 bytes ToC mask
+    fwrite(&tocMask, sizeof(uint32_t), 1, tdmsFile);
+    //4 bytes version number
+    fwrite(&versionNumber, sizeof(uint32_t), 1, tdmsFile);
+    //8 bytes content length without lead in length
+    fwrite(&dataLen, sizeof(uint64_t), 1, tdmsFile);
+    //8 bytes raw data offset without lead in length
+    fwrite(&rawDataOffset, sizeof(uint64_t), 1, tdmsFile);
+}
+\end{lstlisting}
+
+\textit{Meta Data} obsahují informace o~kanálech nezbytné ke zpracování dat jako citlivost, konstanta AD převodníku a podobně. Některé údaje této části jsou opět neměnné. Naměřené hodnoty jsou do souboru zapsané po blocích ve formě 32b celočíselných hodnot. Název souboru obsahuje identifikátor jednotky a časovou značku počátku měření hodnot. Po vytvoření souboru dojde k~ukončení procesu pro zpracování. Součástí programu je i knihovna \textit{libzip} pro komprimaci souborů.
+
+Zdrojový kód programu psaného v~C++ je umístěn na přiloženém médiu ve složce \textit{ServerSW/RawServer/}. Příkazy použité k~přeložení programu jsou v~příloze v~sekci \ref{att:compile}.
+ 
+\subsection{UDPServer}
+Program se opět spouští s~argumenty \textit{-p <port>} a \textit{-v} a je implementovaný v~jazyce C++. Součástí je i konfigurační soubor obsahující přihlašovací údaje do časové databáze. Program po spuštění zpracuje konfigurační soubor a vytvoří soket na daném portu. Při příjmu zprávy od jednotky uloží přijatá data do pole o~velikosti 512 bajtů, vytvoří instanci třídy \textit{Message}, která má na starosti zpracování zprávy a spustí nové vlákno pro zápis dat do databáze. Server je omezen v~počtu vláken které může spustit v~jeden okamžik, tato hodnota se nastavuje změnou makro konstanty \textit{NUM\_OF\_THREADS}. Hodnota by měla být nastavena podle výkonu zařízení na kterém je aplikace spuštěna. Nově spuštěné vlákno provede zpracování zprávy. Při zpracování zprávy je postupně plněna struktura \ref{code:udp} navržena podle komunikačního protokolu.
+\begin{lstlisting}[style=c++, caption={Struktura dat zpracovaných z~UDP zprávy.}, label={code:udp}]
+struct SensorData{
+    uint32_t offset = 0;
+    float value = 0;
+};
+
+struct Sensor{
+    uint8_t sensorId = 0;
+    uint8_t dataType = 0;
+    uint16_t dataSize = 0;
+    SensorData *data = nullptr;
+};
+
+struct UDPMessage{
+    uint16_t version = 0;
+    uint32_t uid = 0;
+    uint32_t timestamp = 0;
+    uint16_t numberOfSensors = 0;
+    Sensor *sensor = nullptr;
+};
+\end{lstlisting}
+Pro zápis dat do časové databáze Influx je využito HTTP komunikační rozhraní a knihovna curlpp. Vkládání hodnot probíhá přes HTTP požadavek obsahující přihlašovací údaje, upřesňující parametry a databázový příkaz. Metodou GET jsou předávány příkazy (\textit{write/read}) a parametry. Nezbytné parametry jsou: název cílové databáze \textit{db}, uživatelský účet \textit{u} a heslo \textit{p}. Příkaz může obsahovat i pokročilejší parametry jako \textit{precision}, který udává přesnost časové značky. Výchozí přesnost je v~nanosekundách. Databázový dotaz je předáván metodou \textit{POST}, je možné zapisovat několik hodnot najednou. Hodnoty jsou odděleny ukončením řádku a obsahují název časové série, hodnoty tagů a polí, naměřená data a časovou značku. Metoda pro zápis dat iteruje podle počtu senzorů a hodnot obsažených ve struktuře zprávy. Veškeré body zapíše do řetězce znaků a všechny body obsažené v~jedné UDP zprávě zapíše v~jednom dotazu. Příklad přidání jednoho bodu do SQL dotazu může vypadat následovně:
+\begin{lstlisting}[style=c++, breaklines, caption={Přidání jednoho bodu do databázového dotazu}, label={code:httpapi}]
+writeQuery += "sensor_" + sensorIndex + "_" + "rms_delta" + " value=" + data.value) + " " + data.timestamp"\n";
+\end{lstlisting}
+Pokud jde o~nultý senzor s~hodnotou 10.0 a časovou značkou 555555 nově přidaný řádek obsahuje \textit{sensor\_0\_rms\_delta value=10.0 555555}.
+
+Zdrojový kód programu psaného v~C++ je umístěn na přiloženém médiu ve složce \textit{ServerSW/AggregationServer/}. Příkazy použité k~přeložení programu jsou v~příloze v~sekci \ref{att:compile}. Ke správnému fungování je potřeba dodat konfigurační soubor s~přihlašovacími údaji do časové databáze.
+
+\subsection{Generování konfiguračního souboru}
+Pro generování konfiguračního souboru ve formátu .ini slouží program \textit{ConfigGenerator}, umístěný na na přiloženém médiu ve složce \textit{ServerSW/ConfigGenerator/}. Program je vytvořený v~jazyce C++ a vyžaduje konfigurační soubor s~přihlašovacími údaji do relační databáze. Logování chyb opět probíhá pomocí knihovny spdlog. Program vyžaduje při spuštění argument obsahující identifikační číslo jednotky. Po spuštění se vygeneruje konfigurační soubor do aktuální složky. Ke komunikaci s~relační databází je využita knihovna \textit{mysqlcppconn}. Program obsahuje třídu \textit{ConfigGenerator}, která se stará o~generování konfiguračního souboru. Třída obsahuje tři veřejné metody:
+\begin{itemize}
+    \item \textit{void generateConfig();} získá všechny informace o~jednotce z~databáze, přesněji z~tabulek \textit{Unit} a \textit{Sensor},
+    \item \textit{std::string getConfigString();} vrací řetězec znaků obsahující konfigurační soubor,
+    \item \textit{void saveConfig(std::string path);} uloží konfigurační soubor, parametr \textit{path} udává cestu k~souboru.
+\end{itemize}
+Tato třída a její veřejné metody umožňují připojení k~například TCP serveru, který by na dotaz žádost jednotky odeslal konfigurační soubor. V~této práci je získání konfiguračního souboru řešeno přes HTTP dotaz a proto tento program pouze ukládá konfigurační soubor.
+
+%zobrazeni csv a tdms pomoci python skriptu
+%instalacni skript
+%Struktura souboru je rozdělena do tří úrovní, nejvyšší úroveˇ
+%cteni dat
+%cteni ze souboru, popis pinu u rpi, vyvedeni data ready
+
+%agregace
+
+%sifrovani
+
+\section{Jednotka}
+Jak již bylo zmíněno, jednotka disponuje operačním systémem Raspbian. Jednotku není potřebné nijak připravovat, jediné co je třeba udělat pro její zprovoznění je vytvořit obraz systému na SD kartu pomocí instalačního skriptu. Jednotka obsahuje program pro čtení a filtrování, agregaci, stahování konfiguračního souboru a nahrávání logů na server.
+
+\subsection{Instalační skripty}
+Jedná se o~sadu skriptů a souborů sloužících k~téměř bezzásahovému zprovoznění jednotky. skripty jsou uloženy na přiloženém médiu ve složce \textit{ServerSW/SDCardInit/}. Jediný skript, se kterým pracuje uživatel je \textit{DiskCreator.sh}. Tento skript slouží k~překopírování všech potřebných souborů a ostatních souborů na SD kartu. Ve skriptu je potřeba upravit řádek \textit{mount /dev/sdd2 /mnt/sdcard} podle zařízení, na kterém je SD karta připojena. Skript kromě kopírování provede na kartě změnu inicializačního skriptu \textit{/etc/rc.local}. Tento skript se vykoná při každém spuštění. Do souboru přidá řádek spouštějící první instalační skript. Po prvním zapnutí jednotky s~nachystanou SD kartou je vykonán skript \textit{RTPatch.sh}, který ze souboru \textit{/proc/cpuinfo} zjistí verzi procesoru, podle ní zjistí verzi RPi a podle zjištěné verze aplikuje jeden z~předkompilovaných real-time patchů dostupných pro verze 3b, 3b+ a 4b. Po aplikaci patche je nutný restart, po kterém se spustí skript \textit{init.sh}. Další skript provede postupně:
+\begin{itemize}
+    \item spuštění SSH,
+    \item instalaci knihoven,
+    \item inicializaci watchdogu,
+    \item stažení a překlad programů z~git repozitáře,
+    \item nastavení programů jaky systémové služby,
+    \item přidání skriptů do služby crontab pro jejich periodické spouštění,
+    \item smazání nepotřebných zdrojových souborů a
+    \item a finální restart jednotky.
+\end{itemize}
+Po finálním restartování je stažen konfigurační soubor a jednotka začíná měřit a odesílat data.
+
+Skript pro kopírování souborů se spouští příkazem \textit{sudo bash ./DiskCreator.sh}. Na SD kartě musí již být vytvořen obraz operačního systému. Obraz operačního systému Raspbian Buster Lite\footnote{https://www.raspberrypi.org/downloads/raspbian/} lze vytvořit například pomocí aplikace balenaEtcher\footnote{https://www.balena.io/etcher/}. Následně stačí jednotku připojit k~internetu, vložit SD kartu a jednotka do pár minut začne měřit a odesílat data na server. 
+
+\subsection{Čtení a filtrování dat} \label{sec:readAndFilter}
+Čtení a filtrování dat provádí jeden program spouštějící dva procesy. Každý proces má alokované jedno fyzické jádro procesoru, které není k~dispozici operačnímu systému. Problémem zvolené platformy je, že systém neběží v~reálném čase a uživatel nemá plnou kontrolu nad vykonáváním programů. To by mohlo způsobit vynechávání velkého množství vzorků při čtení dat o~vysoké vzorkovací frekvenci. Alokace jader a instalace preemptivního real-time patche\footnote{https://wiki.linuxfoundation.org/realtime/start} pro kernel z~velké části řeší problém zvolené platformy. Alokace jader se provádí při inicializaci jednotky a to přidáním parametru \textit{rootwait/isolcpus=2,3 rootwait} souboru \textit{/boot/cmdline.txt}. Při pouštění programu je potřeba říci systému, na jakých jádrech a s~jakou prioritou má program spustit. Příklad spuštění vypadá následovně:
+\begin{lstlisting}[language=bash, breaklines]
+ $ sudo taskset -c 2,3 chrt -f 99 nice -n 20 <program> <program arguments>
+\end{lstlisting}
+Příkaz \textit{taskset -c 2,3} zbůsobí spuštění programu na jádrech $2$ a $3$, příkaz \textit{chrt -f 99} nastaví plánování procesu FIFO (First In First Out) a na nejvyšší prioritu (hodnota $99$). Příkaz \textit{nice -20} opět nastavuje nejvyšší možnou prioritu procesu.
+
+Po spuštění programu dojde k~načtení konfiguračního souboru ve formátu .ini do struktury \textit{Config}. K~zjednodušení parsování konfiguračního souboru je využita knihovna \textit{INIReader.h}\footnote{https://github.com/benhoyt/inih}. Po načtení konfiguračního souboru je inicializována statická třída pro logování využívající stejnou knihovnu spdlog jako serverové aplikace a provede se vytvoření nového procesu. 
+
+Původní proces se stará o~čtení dat z~nastaveného rozhraní. Proces si vytvoří instanci třídy pro čtení. Třídy pro čtení jsou vytvořené dvě, jedna pro čtení ze souboru a druhá pro čtení z~SPI. Obě třídy implementují stejné rozhraní a je tedy možné měnit jejich instance. K~naslouchání signálu \textit{data ready} a komunikaci přes piny pomocí SPI ve stejnojmenné třídě je využita knihovna bcm2835 psaná v~jazyce C a je využitelná na všechny verzi RPi. Knihovna poskytuje přístup k~pinům a dalším vstupně-výstupním zařízením a službám jako je SPI nebo I$^2$C. Třída obsahuje dvě veřejné metody, jednu pro inicializaci spojení a druhou pro nekonečné čtení z~rozhraní. Tyto dvě metody jsou zděděny z~rozhraní \textit{InterfaceReader}. Při inicializaci dochází k~nastavení SPI a převodníku ADS131A04 podle dokumentace\footnote{http://www.ti.com/lit/ds/symlink/ads131a04.pdf} a vytvoření pojmenované sdílené paměti. Sdílená paměť a semafory zajišťující výlučný přístup ke sdílené paměti jsou realizovány knihovnou boost. Vytvořená sdílená paměť má velikost bloku dat určitého časového intervalu upřesněného v~konfiguračním souboru.
+
+Vyčítání a odesílání dat provádí funkce \textit{void bcm2835\_spi\_transfernb(char *tbuf, char *rbuf, uint32\_t len)}. Hexadecimální hodnoty registrů použité pro nastavení převodníku jsou umístěny ve zdrojovém souboru \textit{Spi.h}. Hodnoty jsou připravené k~přenosu při klesající hraně signálu \textit{data ready}, a proto je využita z~knihovny funkce \textit{bcm2835\_gpio\_afen(int pin\_number)}, která při padající hraně signálu na daném pinu nastaví událost (nastaví bit v~registru). Získání dat probíhá aktivním čekáním na událost pomocí funkce \textit{bool bcm2835\_gpio\_eds(int pin)}. Po nastání události jsou data přenesena a zapsána do jedné ze dvou sdílených pamětí. Jakmile je sdílená paměť naplněna, provede se odemčení semaforu dané paměti a tím se povolí čtení filtrovacím procesem. Následně dojde k~uzamčení semaforu druhé paměti pro čtení a začne zápis do druhé sdílené paměti. Díky této implementaci je vždy dostupný jeden blok sdílené paměti jak pro zápis tak i čtení.
+
+V~případě čtení ze souboru je dosaženo vzorkování na požadované frekvenci vyvedením hodinového signálu na volný pin. Tento pin je potřeba fyzicky propojit s~pinem nastaveným jako \textit{data ready}. Vyvedení hodinového signálu je provedeno za použití knihovny \textit{pigpio} funkcí \textit{void gpioHardwareClock(int pin\_number, int frequency)}. Naslouchání signálu a přenos hodnot probíhá stejně jako v~případě třídy SPI.
+
+Filtrovací proces po uvolnění semaforu zkopíruje obsah paměti do bufferu a uloží čas měření. Data z jednotlivých senzorů jsou zpracována decimačním filtrem, a tím je snížena vzorkovací frekvence na 8000 Hz. Data se sníženou vzorkovací frekvencí jsou následně zapsána do jednoho ze dvou bloků sdílené paměti, který slouží pro výměnu dat mezi filtrovacím procesem a agregačním programem. Následně je zkontrolováno, zda přijatý blok měření má být odeslán ve formě TCP zprávy a pokud ano, jsou původní nefiltrovaná data odeslána přes TCP spojení. 
+
+
+\subsection{Agregace dat}
+Agregaci hodnot provádí program \textit{Reader} psaný v~C++. Program je umístěn na přiloženém médiu ve složce \textit{/UnitSW/Aggregation} a spouští se s~parametrem \textit{-p <path>} s~cestou ke konfiguračnímu souboru. Program pro logování využívá knihovnu spdlog.
+
+Program po spuštění načte z~konfiguračního souboru do struktury veškeré informace. Po načtení konfigurace dojde k~vytvoření instance třídy \textit{Aggregation}, inicializuje ji a spustí agregaci. Při inicializaci je otevřena sdílená paměť pro čtení, semafory a je alokována paměť pro zpracovávaná data. Sdílená paměť musí být vytvořena již před spuštěním tohoto programu. Program data zpracovává po časových úsecích, jejichž velikost je daná v~konfiguračním souboru. Po získání bloku dat pro zpracování je zavolána metoda \textit{void calculateRMS();}, která přijatá data převede na zrychlení a z~bloku hodnot o~snížené vzorkovací frekvenci spočítá kvadratický průměr, jehož vzorec je v~\ref{eq:root_mean_square}. Metoda je zobrazená na \ref{code:rms}. Metoda v~každém kroku hlavní smyčky spočítá jednu hodnotu kvadratického průměru pro každý senzor. Počet vzorků, které jsou průměrovány do jedné hodnoty, je nastaveno v~konfiguračním souboru. Metoda vypočítané hodnoty ukládá do dvourozměrného pole bodů rozděleného podle senzorů. Počet bodů pro průměrování je ve výchozím stavu nastaven tak, aby po přepočtení na kvadratický průměr zbývalo 100 bodů měření z~každého senzoru. Po výpočtu kvadratického průměru je aplikován algoritmus $\Delta treshold$. První bod každého bloku je vždy uložen pro odeslání. Ostatní body ponechány pro odeslání v~případě, že rozdíl jejich hodnoty a hodnoty posledního uloženého bodu překračuje v~konfiguraci nastavený práh, nebo pokud bylo od posledního uloženého bodu zahozeno příliš bodů (časový práh opět nastavený v~konfiguračním souboru). Body pro odeslání jsou uloženy do jednorozměrného pole struktur \textit{DataPoint}. Struktura vypadá takto:
+\begin{lstlisting}[style=c++, breaklines]
+struct DataPoint{
+    float value;
+    uint32_t time;
+    uint32_t timeOffset;
+    uint8_t sensorNumber;
+};
+\end{lstlisting}
+a obsahuje hodnotu bodu, unixovou časovou značku času, kdy byl bod naměřen ve vteřinách, časový ofset v~nanosekundách a index senzoru. Po zpracování celého bloku hodnot je pole ponechaných bodů předáno třídě \textit{UDPClient}, která z~bodů poskládá zprávu odpovídající protokolu \ref{pic:udp_protocol} a zprávu odešle na server. Po odeslání zprávy program čeká na další blok dat.
+
+\begin{lstlisting}[style=c++, caption={Výpočet kvadratického průměru z~bloku dat několika senzorů.}, label={code:rms}]
+void Aggregation::calculateRMS() {
+    int rmsIndex = 0;
+    for(int dataIndex = 0; dataIndex < valuesPerChannel; dataIndex += config.average){
+        float valueSum[NUMBER_OF_SENSORS] = {0};
+        for(int blockOffset = 0; blockOffset < config.average; blockOffset++){
+            for(int channelIndex = 0; channelIndex < NUMBER_OF_SENSORS; channelIndex++){
+                float valueInG = buffer[dataIndex + blockOffset + channelIndex*valuesPerChannel];
+                valueInG *= config.adcConstant;
+                valueInG *= config.sensorSensitivity[channelIndex];
+                valueSum[channelIndex] += valueInG*valueInG;
+            }
+        }
+        for(int sensorIndex = 0; sensorIndex < NUMBER_OF_SENSORS; sensorIndex++){
+            rms[sensorIndex][rmsIndex] = sqrtf(valueSum[sensorIndex]/config.average);
+        }
+        rmsIndex++;
+    }
+}
+\end{lstlisting}
+
+\subsection{Ostatní programy a funkcionalita}
+K~získání konfiguračního souboru ze serveru slouží skript \textit{getconfig.sh} umístěný na přiloženém médiu ve složce \textit{UnitSW/}. Konfigurační soubory jsou ze serveru získávány pomocí HTTP dotazu na portu $9999$. Skript si udržuje hlavičku HTTP dotazu získanou při předchozím stažení souboru obsahující informaci o~poslední změně souboru. Skript periodicky získává ze serveru nové informace o~souboru a pokud dojde na ke změně souboru na serveru (indikující změna políčka \textit{Last-Modified}), stáhne se nový soubor a restartuje se měření s~novými parametry. Hlavička HTTP odpovědi, ze které skript získává informace vypadá následovně:
+\begin{lstlisting}[language=bash, breaklines]
+HTTP/1.1 200 OK
+Server: nginx/1.16.1 (Ubuntu)
+Date: Thu, 19 Mar 2020 09:44:44 GMT
+Content-Type: application/octet-stream
+Content-Length: 832
+Last-Modified: Thu, 19 Mar 2020 09:31:21 GMT
+Connection: keep-alive
+ETag: "5e733be9-340"
+Accept-Ranges: bytes
+\end{lstlisting}

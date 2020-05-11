@@ -1,0 +1,38 @@
+\chapter{Příkazy a soubory}\label{att:server_install}
+Tato sekce obsahuje potřebné příkazy a ukázky souborů.
+
+
+\section{SSH}\label{att:ssh}
+\begin{lstlisting}[language=bash,breaklines]
+    $ sudo apt install openssh-server #install ssh
+    $ sudo sed -i 's/#Port 22/Port 60022/g' /etc/ssh/sshd_config #change ssh port
+    $ sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/g' /etc/ssh/sshd_config #disable root login
+    $ sudo ufw allow 60022/tcp #allow new ssh port
+    $ sudo systemctl restart ssh #restart ssh service
+\end{lstlisting}
+
+\section{Potřebné knihovny pro server}\label{att:server_libs}
+\begin{lstlisting}[language=bash,breaklines]
+    $ sudo apt install libzip-dev
+    $ sudo apt install cmake
+    $ sudo apt install git
+    $ sudo apt install libmysqlcppconn-dev
+    $ sudo apt install pkg-config libcurlpp-dev libcurl4-openssl-dev
+    $ sudo apt install libboost-all-dev
+    $ sudo apt install libssl-dev
+\end{lstlisting}
+
+\section{Přeložení projektů na serveru}\label{att:compile}
+\begin{lstlisting}[language=bash,breaklines]
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make
+\end{lstlisting}
+
+
+%\section{InfluxDB}\label{att:influx}
+%\begin{lstlisting}[language=bash,breaklines]
+%    $ wget -qO- https://repos.influxdata.com/influxdb.key | sudo apt-key add - source /etc/lsb-release
+%    $ echo "deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee %/etc/apt/sources.list.d/influxdb.list
+%\end{lstlisting}
